@@ -32,7 +32,7 @@ Este repositório contém o código-fonte e os arquivos necessários para a auto
 
 2.  **Instale as dependências:**
     
-    bash
+    cmd/python console
     
     Copiar código
     
@@ -47,11 +47,11 @@ Este repositório contém o código-fonte e os arquivos necessários para a auto
 
 1.  **Inicie o script de automação:**
     
-    bash
+    cmd/python console
     
     Copiar código
     
-    `python automacao_cadastro.py` 
+    `python bot.py` 
     
 2.  **Monitoramento**:
     
