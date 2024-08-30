@@ -20,14 +20,16 @@ Este repositório contém o código-fonte e os arquivos necessários para a auto
 
 ## 📦 Instalação
 
+0. **Certifique-se de ter o python instalado na sua maquina**
+
 1.  **Clone este repositório:**
     
     bash
     
     Copiar código
     
-    `git clone https://github.com/seu-usuario/nome-do-repositorio.git` 
-    
+    `git clone https://github.com/seu-usuario/nome-do-repositorio.git`   
+
 2.  **Instale as dependências:**
     
     bash
