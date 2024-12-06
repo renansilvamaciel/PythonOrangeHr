@@ -100,6 +100,7 @@ def read_csv(file_path: str) -> pd.DataFrame:
     except Exception as error:
 
         exc_type, exc_value, exc_traceback = sys.exc_info()
+
         raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
 
 
@@ -123,7 +124,7 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
 
         # Set first Name
         bot.find_element(selector='//input[@name="firstName"]', by=By.XPATH, ensure_visible=True).send_keys(name[0])
-        # Set middlw Name
+        # Set middle Name
         bot.find_element(selector='//input[@name="middleName"]', by=By.XPATH, ensure_visible=True).send_keys(name[1])
         # Set last Name
         bot.find_element(selector='//input[@name="lastName"]', by=By.XPATH, ensure_visible=True).send_keys(name[2])
