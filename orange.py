@@ -104,7 +104,7 @@ def read_csv(file_path: str) -> pd.DataFrame:
         raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
 
 
-def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, contact_number: str, keywords: str):
+def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, contact_number: str, keywords: str) -> None:
     """
     Register candidate to OrangeHRM
     :param keywords: keywords to search
@@ -141,7 +141,7 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
         # upload resume file
         tools.upload_file_background(bot, selector_upload="//input[@type='file']", file_path=f'{config.resources_folder}/resume.txt')
 
-        # add candidate
+        # Button add candidate
         bot.find_element(selector='//button[@type="submit"]', by=By.XPATH, ensure_visible=True).click()
 
         # validate if candidate add on OrangeHRM
