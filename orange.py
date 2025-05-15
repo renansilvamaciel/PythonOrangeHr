@@ -1,6 +1,6 @@
 from webdriver_manager.chrome import ChromeDriverManager
 from botcity.web.browsers.chrome import default_options
-from botcity.web import WebBot, By
+from botcity.web import WebBot, By, Browser
 import pandas as pd
 import config
 import tools
@@ -14,6 +14,9 @@ def login(bot: WebBot) -> None:
     :return: None
     """
     try:
+
+        bot.browser = Browser.CHROME
+
         # Set the driver on browser
         bot.driver_path = ChromeDriverManager().install()
 

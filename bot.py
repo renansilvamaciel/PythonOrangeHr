@@ -1,4 +1,4 @@
-from botcity.maestro import BotMaestroSDK, AutomationTaskFinishStatus, AlertType
+from botcity.maestro import BotMaestroSDK, AutomationTaskFinishStatus
 from botcity.web import WebBot
 import config
 import orange
@@ -11,6 +11,9 @@ def main():
 
     # Configure whether or not to run on headless mode
     bot.headless = False
+
+    # Disable errors if we are not connected to Maestro
+    BotMaestroSDK.RAISE_NOT_CONNECTED = True
 
     # Conecta com a BotMaestro
     maestro = BotMaestroSDK.from_sys_args()
@@ -38,7 +41,7 @@ def main():
             # Verifica se a task foi interrompida via Control Room
             if execution.task_id and maestro.get_task(task_id=execution.task_id).is_interrupted():
                 maestro.finish_task(task_id=execution.task_id,
-                                    status=AutomationTaskFinishStatus.SUCCESS,
+                                    status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
                                     message="Execução interrompida via Control Room!")
                 return
 
@@ -59,8 +62,17 @@ def main():
                 qt_itens_sucesso += 1
 
             except Exception as error:
+
                 error_message, error_line, task_name = eval(str(error))
+
                 print(fr'Error Message: {error_message} /n Error line number:{error_line} /n Task Name: {task_name}')
+
+                bot.screenshot('error.png')
+
+                maestro.error(task_id=execution.task_id, exception=error, screenshot='error.png')
+
+                maestro.error(task_id=execution.task_id, exception=error)
+
 
         # Envia status = 'Sucesso' para a BotMaestro
         maestro.finish_task(task_id=execution.task_id,
@@ -71,8 +83,10 @@ def main():
 
 
     except Exception as error:
+        maestro.error(task_id=execution.task_id, exception=error)
+
+        print('Error Message: ', error)
         error_message, error_line, task_name = eval(str(error))
-        print(fr'Error Message: {error_message} Error line number:{error_line} Task Name: {task_name}')
 
         # Envia status = 'Falha' para a Control Room
         maestro.finish_task(task_id=execution.task_id,

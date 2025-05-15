@@ -2,4 +2,5 @@ botcity-framework-web>=1.0.1
 botcity-maestro-sdk>=0.6.0
 webdriver_manager
 pandas
+setuptools
 
