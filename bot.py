@@ -76,7 +76,7 @@ def main():
 
         # Envia status = 'Sucesso' para a BotMaestro
         maestro.finish_task(task_id=execution.task_id,
-                            status=AutomationTaskFinishStatus.SUCCESS,
+                            status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
                             message="Execução finalizada com sucesso!",
                             total_items=qt_total_itens,
                             processed_items=qt_itens_sucesso)
