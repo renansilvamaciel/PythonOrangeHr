@@ -21,7 +21,7 @@ def main():
         orange.login(bot)
 
         # Obtendo a referência do Datapool
-        candidatos = config.maestro.get_datapool(label="Orange_hr")
+        candidatos = config.maestro.get_datapool(label="Orange_hr_demonstracao")
 
 
         while candidatos.has_next():
@@ -48,13 +48,17 @@ def main():
                 contact_number = item.get_value("contact_number")
                 keywords = item.get_value("keywords")
 
-                qt_total_itens += 1
 
                 # Navigate from de recruitment menu
                 orange.access_add_candidate(bot)
 
                 # Register all candidates on Orange HRM
                 orange.register_candidate(bot, full_name, vacancy, email, contact_number, keywords)
+
+                # Registrar como item processado com sucesso
+                item.report_done()
+
+                qt_total_itens += 1
 
             except Exception as error:
 
