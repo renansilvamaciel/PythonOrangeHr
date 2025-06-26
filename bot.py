@@ -1,57 +1,53 @@
-from botcity.maestro import BotMaestroSDK, AutomationTaskFinishStatus
+from botcity.maestro import AutomationTaskFinishStatus
 from botcity.web import WebBot
 import config
 import orange
-import tools
 
 
 def main():
 
     bot = WebBot()
 
-    # Configure whether or not to run on headless mode
     bot.headless = False
 
-    # Disable errors if we are not connected to Maestro
-    BotMaestroSDK.RAISE_NOT_CONNECTED = True
-
-    # Conecta com a BotMaestro
-    maestro = BotMaestroSDK.from_sys_args()
-    execution = maestro.get_execution()
+    execution = config.maestro.get_execution("9885358")
 
     # Inicializar variáveis
     qt_total_itens = qt_itens_sucesso = 0
 
     try:
 
-        # replace a resources folder
-        tools.new_folder(config.resources_folder, True)
-
         # Access the Orange HRM website
         orange.login(bot)
 
-        # Download to CSV file
-        path_csv = orange.download_csv(bot, 'https://workshop.botcity.dev/assets/candidatos.csv')
+        # Obtendo a referência do Datapool
+        candidatos = config.maestro.get_datapool(label="Orange_hr_demonstracao")
 
-        # Read csv file
-        candidates = orange.read_csv(path_csv)
 
-        for index, row in candidates.iterrows():
-
-            # Verifica se a task foi interrompida via Control Room
-            if execution.task_id and maestro.get_task(task_id=execution.task_id).is_interrupted():
-                maestro.finish_task(task_id=execution.task_id,
-                                    status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
-                                    message="Execução interrompida via Control Room!")
-                return
+        while candidatos.has_next():
 
             try:
-                full_name = candidates.iloc[index, 0]
-                vacancy = candidates.iloc[index, 1]
-                email = candidates.iloc[index, 2]
-                contact_number = candidates.iloc[index, 3]
-                keywords = candidates.iloc[index, 4]
-                qt_total_itens += 1
+
+                # Verifica se a task foi interrompida via Control Room
+                if execution.task_id and config.maestro.get_task(task_id=execution.task_id).is_interrupted():
+                    config.maestro.finish_task(task_id=execution.task_id,
+                                               status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
+                                               message="Execução interrompida via Control Room!")
+                    return
+
+                # Retorna o próximo item disponível do Datapool
+                item = candidatos.next(task_id=execution.task_id)
+
+                if item is None:
+                    # Se o item for nulo, encerra o loop
+                    break
+
+                full_name = item.get_value("full_name")
+                vacancy = item.get_value("vacancy")
+                email = item.get_value("email")
+                contact_number = item.get_value("contact_number")
+                keywords = item.get_value("keywords")
+
 
                 # Navigate from de recruitment menu
                 orange.access_add_candidate(bot)
@@ -59,7 +55,10 @@ def main():
                 # Register all candidates on Orange HRM
                 orange.register_candidate(bot, full_name, vacancy, email, contact_number, keywords)
 
-                qt_itens_sucesso += 1
+                # Registrar como item processado com sucesso
+                item.report_done()
+
+                qt_total_itens += 1
 
             except Exception as error:
 
@@ -69,13 +68,13 @@ def main():
 
                 bot.screenshot('error.png')
 
-                maestro.error(task_id=execution.task_id, exception=error, screenshot='error.png')
+                config.maestro.error(task_id=int(execution.task_id), exception=error, screenshot='error.png')
 
-                maestro.error(task_id=execution.task_id, exception=error)
+                config.maestro.error(task_id=int(execution.task_id), exception=error)
 
 
         # Envia status = 'Sucesso' para a BotMaestro
-        maestro.finish_task(task_id=execution.task_id,
+        config.maestro.finish_task(task_id=execution.task_id,
                             status=AutomationTaskFinishStatus.SUCCESS,
                             message="Execução finalizada com sucesso!",
                             total_items=qt_total_itens,
@@ -83,16 +82,16 @@ def main():
 
 
     except Exception as error:
-        maestro.error(task_id=execution.task_id, exception=error)
+        config.maestro.error(task_id=int(execution.task_id), exception=error)
 
         print('Error Message: ', error)
         error_message, error_line, task_name = eval(str(error))
 
         # Envia status = 'Falha' para a Control Room
-        maestro.finish_task(task_id=execution.task_id,
-                            status=AutomationTaskFinishStatus.FAILED,
-                            message=f"{error_message} | Error line number:{error_line} | Task Name: {task_name}",
-                            processed_items=qt_itens_sucesso)
+        config.maestro.finish_task(task_id=execution.task_id,
+                                   status=AutomationTaskFinishStatus.FAILED,
+                                   message=f"{error_message} | Error line number:{error_line} | Task Name: {task_name}",
+                                   processed_items=qt_itens_sucesso)
 
     finally:
         # Fecha o navegador
