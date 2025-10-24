@@ -10,7 +10,7 @@ def main():
 
     bot.headless = False
 
-    execution = config.maestro.get_execution("9885358")
+    execution = config.maestro.get_execution("")
 
     # Inicializar variáveis
     qt_total_itens = qt_itens_sucesso = 0
@@ -23,6 +23,7 @@ def main():
         # Obtendo a referência do Datapool
         candidatos = config.maestro.get_datapool(label="Orange_hr_demonstracao")
 
+        lista = candidatos.summary()
 
         while candidatos.has_next():
 
