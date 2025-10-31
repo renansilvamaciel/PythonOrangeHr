@@ -1,4 +1,4 @@
-from botcity.maestro import AutomationTaskFinishStatus
+from botcity.maestro import AutomationTaskFinishStatus, ErrorType, AlertType
 from botcity.web import WebBot
 import config
 import orange
@@ -10,10 +10,11 @@ def main():
 
     bot.headless = False
 
-    execution = config.maestro.get_execution("")
+    execution = config.maestro.get_execution("13588300")
 
     # Inicializar variáveis
     qt_total_itens = qt_itens_sucesso = 0
+    item = None
 
     try:
 
@@ -21,9 +22,7 @@ def main():
         orange.login(bot)
 
         # Obtendo a referência do Datapool
-        candidatos = config.maestro.get_datapool(label="Orange_hr_demonstracao")
-
-        lista = candidatos.summary()
+        candidatos = config.maestro.get_datapool(label="test_find_item")
 
         while candidatos.has_next():
 
@@ -65,13 +64,13 @@ def main():
 
                 error_message, error_line, task_name = eval(str(error))
 
-                print(fr'Error Message: {error_message} /n Error line number:{error_line} /n Task Name: {task_name}')
+                item.report_error(error_type=ErrorType.SYSTEM, finish_message=f"{error_message}")
 
-                bot.screenshot('error.png')
+                print(fr'Error Message: {error_message} \n Error line number:{error_line} \n Task Name: {task_name}')
 
-                config.maestro.error(task_id=int(execution.task_id), exception=error, screenshot='error.png')
-
-                config.maestro.error(task_id=int(execution.task_id), exception=error)
+                config.maestro.maestro.alert(task_id=execution.task_id,title="Warning alert",
+                                             message=fr'Error Message: {error_message} | Error line number:{error_line} | Task Name: {task_name}',
+                                             alert_type=AlertType.INFO)
 
 
         # Envia status = 'Sucesso' para a BotMaestro
@@ -83,7 +82,9 @@ def main():
 
 
     except Exception as error:
-        config.maestro.error(task_id=int(execution.task_id), exception=error)
+
+        bot.screenshot('error.png')
+        config.maestro.error(task_id=int(execution.task_id), exception=error, screenshot='error.png')
 
         print('Error Message: ', error)
         error_message, error_line, task_name = eval(str(error))
@@ -92,6 +93,7 @@ def main():
         config.maestro.finish_task(task_id=execution.task_id,
                                    status=AutomationTaskFinishStatus.FAILED,
                                    message=f"{error_message} | Error line number:{error_line} | Task Name: {task_name}",
+                                   total_items=qt_total_itens,
                                    processed_items=qt_itens_sucesso)
 
     finally:
