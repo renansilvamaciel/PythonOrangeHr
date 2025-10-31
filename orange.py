@@ -1,6 +1,6 @@
-from webdriver_manager.chrome import ChromeDriverManager
+
 from botcity.web.browsers.chrome import default_options
-from botcity.web import WebBot, By, Browser
+from botcity.web import WebBot, By
 import pandas as pd
 import config
 import tools
@@ -14,11 +14,6 @@ def login(bot: WebBot) -> None:
     :return: None
     """
     try:
-
-        bot.browser = Browser.CHROME
-
-        # Set the driver on browser
-        bot.driver_path = ChromeDriverManager().install()
 
         # Select the folder to download the file
         bot.download_folder_path = config.resources_folder
@@ -152,7 +147,6 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
             raise Exception('Failed to register candidate')
 
     except Exception as error:
-
         exc_type, exc_value, exc_traceback = sys.exc_info()
         raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
 

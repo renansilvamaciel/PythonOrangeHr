@@ -1,3 +1,3 @@
 #!/bin/bash
 
-zip -r "technicalChallengeBotCity.zip" * -x "technicalChallengeBotCity.zip"
+zip -r "PythonOrangeHrm.zip" * -x "PythonOrangeHrm.zip", "venv", ".env", ".gitignore", "temp", "output"

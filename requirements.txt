@@ -1,6 +1,14 @@
-botcity-framework-web>=1.0.1
-botcity-maestro-sdk>=0.6.0
-webdriver_manager
+botcity_framework_core
+botcity_csv_plugin
+botcity_framework_base
+botcity_excel_plugin
+botcity_framework_web
+botcity_maestro_sdk>=0.9.0, <1
+Jinja2==3.1.6
+python-dotenv
+botcity-framework-web
+webdriver-manager
 pandas
-setuptools
-
+pandas>=2.2.3,<3
+Requests>=2.32.3,<3
+cronexpr>=0.30.0,<1

@@ -1,9 +1,8 @@
-from botcity.web.util import element_as_select
 from botcity.web import WebBot, By
 import shutil as sh
 import config
+import sys
 import os
-
 
 def waiting_download(bot: WebBot, file_extension: str = '.pdf', timeout: int = 30000) -> str:
     """

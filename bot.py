@@ -1,53 +1,56 @@
-from botcity.maestro import AutomationTaskFinishStatus, ErrorType, AlertType
-from botcity.web import WebBot
+from framework.exceptions import SystemException, BusinessException, InterruptException
+from framework.error_handling import (handle_interrupt_requested,
+                                      handle_business_exception,
+                                      handle_system_exception)
+from framework.initialize import initialize, init_webbot
+from framework.finalize import finalize, cleanup
+from framework.state import STATE
+import logging
 import config
 import orange
+import tools
 
 
-def main():
+logger = logging.getLogger(__name__)
 
-    bot = WebBot()
-
-    bot.headless = False
-
-    execution = config.maestro.get_execution("13588300")
-
-    # Inicializar variáveis
-    qt_total_itens = qt_itens_sucesso = 0
-    item = None
-
+'''
+TODO: report error AND register error at the same time 
+'''
+def action():
     try:
+        initialize()
 
-        # Access the Orange HRM website
+        '''
+           Add the steps to your automation process here.
+        '''
+
+        logger.info("Item processing has started")
+
+        init_webbot()
+
+        bot = STATE.webbot
+
+        # Login Orange HRM
         orange.login(bot)
 
-        # Obtendo a referência do Datapool
-        candidatos = config.maestro.get_datapool(label="test_find_item")
+        # replace a resources folder
+        tools.new_folder(config.resources_folder, True)
 
-        while candidatos.has_next():
+        # Download to CSV file
+        path_csv = orange.download_csv(bot, 'https://workshop.botcity.dev/assets/candidatos.csv')
 
-            try:
+        # Read csv file
+        candidates = orange.read_csv(path_csv)
+        try:
+            for index, row in candidates.iterrows():
 
-                # Verifica se a task foi interrompida via Control Room
-                if execution.task_id and config.maestro.get_task(task_id=execution.task_id).is_interrupted():
-                    config.maestro.finish_task(task_id=execution.task_id,
-                                               status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
-                                               message="Execução interrompida via Control Room!")
-                    return
+                STATE.raise_for_interrupt_requested()
 
-                # Retorna o próximo item disponível do Datapool
-                item = candidatos.next(task_id=execution.task_id)
-
-                if item is None:
-                    # Se o item for nulo, encerra o loop
-                    break
-
-                full_name = item.get_value("full_name")
-                vacancy = item.get_value("vacancy")
-                email = item.get_value("email")
-                contact_number = item.get_value("contact_number")
-                keywords = item.get_value("keywords")
-
+                full_name = str(candidates.iloc[index, 0])
+                vacancy = str(candidates.iloc[index, 1])
+                email = str(candidates.iloc[index, 2])
+                contact_number = str(candidates.iloc[index, 3])
+                keywords = str(candidates.iloc[index, 4])
 
                 # Navigate from de recruitment menu
                 orange.access_add_candidate(bot)
@@ -55,51 +58,25 @@ def main():
                 # Register all candidates on Orange HRM
                 orange.register_candidate(bot, full_name, vacancy, email, contact_number, keywords)
 
-                # Registrar como item processado com sucesso
-                item.report_done()
+                # Process finalize with success
+                STATE.register_success()
 
-                qt_total_itens += 1
+        except InterruptException as ex:
+            handle_interrupt_requested(ex)
 
-            except Exception as error:
+        except BusinessException as ex:
+            handle_business_exception(ex)
+        except (SystemException, Exception) as ex:
+            logger.error(f"systemexception/generic") #arrumar
+            handle_system_exception(ex)
+            initialize(restart=True)
 
-                error_message, error_line, task_name = eval(str(error))
-
-                item.report_error(error_type=ErrorType.SYSTEM, finish_message=f"{error_message}")
-
-                print(fr'Error Message: {error_message} \n Error line number:{error_line} \n Task Name: {task_name}')
-
-                config.maestro.maestro.alert(task_id=execution.task_id,title="Warning alert",
-                                             message=fr'Error Message: {error_message} | Error line number:{error_line} | Task Name: {task_name}',
-                                             alert_type=AlertType.INFO)
-
-
-        # Envia status = 'Sucesso' para a BotMaestro
-        config.maestro.finish_task(task_id=execution.task_id,
-                            status=AutomationTaskFinishStatus.SUCCESS,
-                            message="Execução finalizada com sucesso!",
-                            total_items=qt_total_itens,
-                            processed_items=qt_itens_sucesso)
-
-
-    except Exception as error:
-
-        bot.screenshot('error.png')
-        config.maestro.error(task_id=int(execution.task_id), exception=error, screenshot='error.png')
-
-        print('Error Message: ', error)
-        error_message, error_line, task_name = eval(str(error))
-
-        # Envia status = 'Falha' para a Control Room
-        config.maestro.finish_task(task_id=execution.task_id,
-                                   status=AutomationTaskFinishStatus.FAILED,
-                                   message=f"{error_message} | Error line number:{error_line} | Task Name: {task_name}",
-                                   total_items=qt_total_itens,
-                                   processed_items=qt_itens_sucesso)
-
+    except Exception as ex: 
+        logger.error(f"Error during initialize: {ex}")
+          
     finally:
-        # Fecha o navegador
-        bot.stop_browser()
+        cleanup()
+        finalize()
 
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    action()
