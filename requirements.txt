@@ -1,5 +1,5 @@
 botcity_framework_core
-botcity_csv_plugin
+botcity-csv-plugin
 botcity_framework_base
 botcity_excel_plugin
 botcity_framework_web

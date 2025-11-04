@@ -1,4 +1,4 @@
-# from import BotCSVPlugin
+from botcity.plugins.csv import BotCSVPlugin
 from typing import Any, Dict, List
 from framework.state import STATE
 from functools import lru_cache
@@ -317,6 +317,23 @@ class APISource:
         url = f'{self.API_URL}/error/{error_id}'
         return self._get(url)
 
+    @staticmethod
+    def get_datapool_values(self, datapool_label: str) -> Any | None:
+        """
+        Get the DataPool Label itens
+        Returns: dict | None
+
+        """
+        url = f'{self.API_URL}/api/v2/datapool/{datapool_label}/view?displayValue=Henrique'
+
+        headers = {'token':  self._get_access_token(), 'organization': self.login}
+
+        with requests.get(url, headers=headers, timeout=3600) as req:
+            if req.ok:
+                return json.loads(req.content)
+            req.raise_for_status()
+
+        return None
 """
 Setting Datasource: Datapool | CSV
 """
