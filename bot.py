@@ -42,7 +42,9 @@ def main():
             if execution.task_id and maestro.get_task(task_id=execution.task_id).is_interrupted():
                 maestro.finish_task(task_id=execution.task_id,
                                     status=AutomationTaskFinishStatus.PARTIALLY_COMPLETED,
-                                    message="Execução interrompida via Control Room!")
+                                    message="Execução interrompida via Control Room!",
+                                    total_items=qt_total_itens,
+                                    processed_items=qt_itens_sucesso)
                 return
 
             try:
@@ -73,11 +75,15 @@ def main():
 
                 maestro.error(task_id=execution.task_id, exception=error)
 
+        if path_csv:
+            maestro.post_artifact(task_id=execution.task_id,
+                                  artifact_name="Candidates list",
+                                  filepath=f"{path_csv}")
 
         # Envia status = 'Sucesso' para a BotMaestro
         maestro.finish_task(task_id=execution.task_id,
                             status=AutomationTaskFinishStatus.SUCCESS,
-                            message="Execução finalizada Parcialmente completa!",
+                            message="Execução finalizada !",
                             total_items=qt_total_itens,
                             processed_items=qt_itens_sucesso)
 
@@ -95,6 +101,7 @@ def main():
                             processed_items=qt_itens_sucesso)
 
     finally:
+
         # Fecha o navegador
         bot.stop_browser()
 
