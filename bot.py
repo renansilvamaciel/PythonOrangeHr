@@ -66,6 +66,7 @@ def action():
 
         except BusinessException as ex:
             handle_business_exception(ex)
+
         except (SystemException, Exception) as ex:
             logger.error(f"systemexception/generic") #arrumar
             handle_system_exception(ex)
