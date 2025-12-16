@@ -14,10 +14,10 @@ maestro = STATE.maestro
 execution = STATE.execution
 bot = STATE.webbot #STATE.desktopbot
 
-# todo unificar funções repetitivas \/
+
 
 def handle_business_exception(exception: Exception):
-    STATE.register_error()  # TODO report error + register error
+    STATE.register_error()
     data_source.report_error("BUSINESS EXCEPTION", "Business Exception message")
     logger.error(f"Business Exception occurred for item {STATE.item}.")
     maestro.alert(task_id=STATE.task_id,
@@ -28,7 +28,7 @@ def handle_business_exception(exception: Exception):
 
 
 def handle_system_exception(exception: Exception):
-    STATE.register_error()  # TODO report error + register error
+    STATE.register_error()
     data_source.report_error("SYSTEM EXCEPTION", exception)
     logger.error(f"System Exception ocurred: {exception}")
     maestro.alert(task_id=STATE.task_id,
@@ -39,7 +39,7 @@ def handle_system_exception(exception: Exception):
 
 
 def handle_interrupt_requested(exception: Exception):
-    STATE.register_error()  # TODO report error + register error
+    STATE.register_error()
     data_source.report_error("INTERRUPTION REQUESTED", Exception)
     logger.warning(f"Interruption requested.")
     maestro.alert(task_id=STATE.task_id,
@@ -54,12 +54,11 @@ def screenshot_error_report(exception):
     """
     date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     screenshot_filepath = f".\\temp\\error-{date}.png"
-    # \/ todo fix "STATE.desktopbot" #definição do 'bot' que está sendo usado (web ou desktop) de forma mais genérica?
     STATE.webbot.save_screenshot(screenshot_filepath)
     maestro.error(task_id=STATE.task_id, exception=exception,
                   screenshot=screenshot_filepath)
     
-def register_sucess(message): #TODO realocate(?)
+def register_sucess(message):
     logger.info(f"Item processing successfull: {message}")
     STATE.register_success()
     data_source.report_success(message)

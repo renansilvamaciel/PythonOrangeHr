@@ -97,7 +97,6 @@ class State:
         return asdict(self)
 
 
-# todo change to autodetect? if from sys args is not present, then it is in simulation mode (?)
 SIMULATION = True
 
 
@@ -118,7 +117,6 @@ if not SIMULATION:
     STATE.maestro = BotMaestroSDK.from_sys_args(default_server=SERVER,
                                                 default_login=LOGIN, default_key=KEY)
 
-    # Todo: colocar uma camada com o SDK talvez para gerar uma tarefa teste e pegar o ID da task
     STATE.task_id = TASK_ID
     STATE.execution = STATE.maestro.get_execution(STATE.task_id)
 

@@ -47,7 +47,7 @@ def setup_logger():
     logger.info(f"Log created at {log_file}.")
 
 
-def setup_botcity_log():  # todo tirar?
+def setup_botcity_log():
     try:
         STATE.maestro.new_log(STATE.task_info().activity_name, [
                                 Column("Message", "message", 100)])

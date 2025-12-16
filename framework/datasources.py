@@ -47,7 +47,7 @@ class DatapoolSource(BaseSource):
             return None
         item = self.dp.next(STATE.task_id)
         if not item:
-            return None  # talvez tenha que usar stopiteration todo
+            return None
         self.current_item = item
         STATE.item = item.values
         return item.values if item else None
@@ -55,12 +55,12 @@ class DatapoolSource(BaseSource):
     def report_success(self, status_message):
         if not self.current_item:
             return
-        self.current_item.report_done()  # TODO send status message when available via API
+        self.current_item.report_done()
 
     def report_error(self, error_type, status_message):
         if not self.current_item:
             return
-        self.current_item.report_error()  # TODO send status message when available via API
+        self.current_item.report_error()
 
 
 class CSVSource(BaseSource):

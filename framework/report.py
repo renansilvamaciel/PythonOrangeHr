@@ -11,7 +11,7 @@ report.py
 '''
 
 
-# TODO fix variables \/
+
 def generate_jinja_report():
     environment = jinja2.Environment()
     template = environment.from_string(""" 
