@@ -43,18 +43,10 @@ def initialize(restart: bool = False):
         else:
             run_once()
 
-        # Open apps/systems
-        logger.info(f"Opening apps...")
-        ...
+    except Exception as e:
+        logger.error(e)
+        raise ValueError(e)
 
-        # Log into apps/systems
-        logger.info(f"Logging in...")
-        ...
-
-        init_webbot()
-        init_desktopbot()
-    except:
-        ...
 
 
 def init_webbot():
