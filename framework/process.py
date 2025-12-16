@@ -1,8 +1,7 @@
 from framework.state import STATE
 import logging
 
-import orange
-
+from framework import orange
 
 logger = logging.getLogger(__name__)
 

@@ -6,10 +6,7 @@ from framework.initialize import initialize, init_webbot
 from framework.finalize import finalize, cleanup
 from framework.state import STATE
 import logging
-import config
-import orange
-import tools
-
+from framework import orange, tools, config
 
 logger = logging.getLogger(__name__)
 
