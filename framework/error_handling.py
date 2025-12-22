@@ -43,8 +43,7 @@ def screenshot_error_report(exception):
     date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     screenshot_filepath = fr".\temp\error-{date}.png"
     STATE.webbot.save_screenshot(screenshot_filepath)
-    maestro.error(task_id=STATE.task_id, exception=exception,
-                  screenshot=screenshot_filepath)
+
 
 
 def register_sucess(message):

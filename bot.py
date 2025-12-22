@@ -58,8 +58,8 @@ def action():
             initialize(restart=True)
 
 
-    except InterruptException as ex:
-        handle_interrupt_requested(ex)
+    except InterruptException:
+        handle_interrupt_requested()
 
     except BusinessException as ex:
         handle_business_exception(ex)
