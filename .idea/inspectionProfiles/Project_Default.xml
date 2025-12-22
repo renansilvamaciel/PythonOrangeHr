@@ -1,0 +1,38 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="pyarrow" />
+          <option value="requests" />
+          <option value="urllib3" />
+          <option value="httpx" />
+          <option value="selenium" />
+          <option value="webdriver-manager" />
+          <option value="pyautogui" />
+          <option value="pywinauto" />
+          <option value="pyperclip" />
+          <option value="clipboard" />
+          <option value="pymysql" />
+          <option value="python-docx" />
+          <option value="docx2pdf" />
+          <option value="PyPDF2" />
+          <option value="openpyxl" />
+          <option value="python-dateutil" />
+          <option value="pycryptodome" />
+          <option value="python-dotenv" />
+          <option value="pydantic" />
+          <option value="databricks-cli" />
+          <option value="databricks-connect" />
+          <option value="psutil" />
+          <option value="lxml" />
+          <option value="typing-extensions" />
+          <option value="regex" />
+          <option value="pytest" />
+          <option value="pytest-cov" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

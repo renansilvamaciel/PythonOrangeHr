@@ -1,8 +1,6 @@
-# from botcity.core import DesktopBot  # Import for Desktop Bot
 from botcity.maestro.model import AutomationTaskFinishStatus, AutomationTask
 from botcity.maestro import BotMaestroSDK, dataclass
 from framework.exceptions import InterruptException
-# from _typeshed import DataclassInstance
 from dataclasses import field, asdict
 from botcity.web import WebBot
 from dotenv import load_dotenv
@@ -101,7 +99,7 @@ SIMULATION = True
 
 
 
-if not SIMULATION:
+if SIMULATION:
     # Set your credentials in the .env file order to run your bot locally.
     load_dotenv()
     SERVER = os.getenv('SERVER')

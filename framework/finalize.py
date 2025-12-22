@@ -47,15 +47,15 @@ def finalize():
         ...
 
         try:
-            STATE.maestro.new_log_entry(STATE.task_info().activity_name, {
-                "message": finish_status_message()})
+            STATE.maestro.new_log_entry(STATE.task_info().activity_name, {"message": finish_status_message()})
+
         except Exception as ex:
             logger.error(f"Error while trying to create a new log entry in the BotCity Orchestrator: {ex}")
 
         # Upload output folder to BotCity Orchestrator as Result Files
         upload_output_orchestrator()
         
-        
+
     except Exception as ex:
         logger.error(f"Error during finalize: {ex}")
         raise ex

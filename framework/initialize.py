@@ -7,7 +7,7 @@ from framework.state import STATE
 from pathlib import Path
 import logging
 import shutil
-
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +24,9 @@ def run_once():
     """
     execution = STATE.execution
     logger.info(f"Automation {STATE.task_info().activity_name} started. ")
+    setup_temp_folders()
     setup_logger()
     setup_botcity_log()
-    setup_temp_folders()
     print(f"Task ID is: {execution.task_id}")
     if execution.parameters:
         print(f"Task Parameters are: {execution.parameters}")
@@ -44,8 +44,9 @@ def initialize(restart: bool = False):
             run_once()
 
     except Exception as e:
-        logger.error(e)
-        raise ValueError(e)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        raise ValueError(e, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
+
 
 
 

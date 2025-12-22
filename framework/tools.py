@@ -1,6 +1,6 @@
 from botcity.web import WebBot, By
+import framework.config as config
 import shutil as sh
-import config
 import sys
 import os
 

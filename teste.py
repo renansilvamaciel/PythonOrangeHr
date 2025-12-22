@@ -10,6 +10,11 @@ from framework import orange, tools, config
 
 logger = logging.getLogger(__name__)
 
+'''
+TODO: report error AND register error at the same time 
+'''
+
+
 def action():
     try:
         initialize()

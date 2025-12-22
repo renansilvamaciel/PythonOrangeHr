@@ -5,6 +5,7 @@ import datetime
 import logging
 
 
+
 '''
 Logger
     Configure logging for the automation process. This module sets up both file-based and BotCity logging.
@@ -29,8 +30,8 @@ def log_result_file() -> str:
     """
     date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     task_id = STATE.task_id
-    log_result_file = f".\\output\\Log_BotCity_task-{task_id}_date-{date}.log"
-    return log_result_file
+
+    return fr".\output\Log_BotCity_task-{task_id}_date-{date}.log"
 
 
 def setup_logger():

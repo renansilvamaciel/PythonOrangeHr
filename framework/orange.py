@@ -1,10 +1,16 @@
+from logging import raiseExceptions
 
+from framework.exceptions import SystemException
 from botcity.web.browsers.chrome import default_options
 from botcity.web import WebBot, By
+import framework.config as config
+import framework.tools as tools
 import pandas as pd
-import config
-import tools
 import sys
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def login(bot: WebBot) -> None:
@@ -26,21 +32,25 @@ def login(bot: WebBot) -> None:
         bot.maximize_window()
 
         # Set Username
-        bot.find_element(selector='//input[@name="username"]', by=By.XPATH, ensure_visible=True, ensure_clickable=True).send_keys('Admin')
+        bot.find_element(selector='//input[@name="username"]',
+                         by=By.XPATH, ensure_visible=True, ensure_clickable=True).send_keys('Admin')
 
         # Set password
         bot.find_element(selector='//input[@name="password"]', by=By.XPATH, ensure_visible=True).send_keys('admin123')
 
         # Press button to login
-        bot.find_element(selector='//button[@type="submit"]', by=By.XPATH, ensure_visible=True, ensure_clickable=True).click()
+        bot.find_element(selector='//button[@type="submit"]',
+                         by=By.XPATH, ensure_visible=True, ensure_clickable=True).click()
 
         # Find any hook to confirm login
-        if not bot.find_element(selector='//span[text()="Recruitment"]', by=By.XPATH, ensure_visible=True):
-            raise Exception('Failed to login to OrangeHRM')
+        if bot.find_element(selector='//span[text()="Recruitment"]', by=By.XPATH, ensure_visible=True):
+            raise SystemException('Failed to login to OrangeHRM')
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
+        logger.error(
+            f"Type Erro:{error} | Line:{exc_traceback.tb_lineno} | Task:{exc_traceback.tb_frame.f_code.co_name}")
+        raise ValueError(error)
 
 
 def access_add_candidate(bot: WebBot) -> None:
@@ -55,7 +65,7 @@ def access_add_candidate(bot: WebBot) -> None:
 
         # find any hook to confirm access recruitment menu
         if not bot.find_element(selector='//button[@type="submit"]', by=By.XPATH, ensure_visible=True):
-            raise Exception('Failed to access recruitment page')
+            raise SystemException('Failed to access recruitment page')
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -81,6 +91,8 @@ def download_csv(bot: WebBot, link_download: str) -> str:
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
+        logger.error(
+            f"Type Erro:{error} | Line:{exc_traceback.tb_lineno} | Task:{exc_traceback.tb_frame.f_code.co_name}")
         raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
 
 
@@ -144,7 +156,7 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
 
         # validate if candidate add on OrangeHRM
         if not bot.find_element(selector=f"//form[h6[text()='Application Stage']]//p[text()='{full_name}']", by=By.XPATH, ensure_visible=True):
-            raise Exception('Failed to register candidate')
+            raise SystemException('Failed to register candidate')
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
