@@ -31,8 +31,8 @@ def action():
 
         # Read csv file
         candidates = orange.read_csv(path_csv)
-        try:
-            for index, row in candidates.iterrows():
+        for index, row in candidates.iterrows():
+            try:
                 STATE.raise_for_interrupt_requested()
 
                 full_name = str(candidates.iloc[index, 0])
@@ -50,12 +50,12 @@ def action():
                 # Process finalize with success
                 STATE.register_success()
 
-        except BusinessException as ex:
-            handle_business_exception(ex)
+            except BusinessException as ex:
+                handle_business_exception(ex)
 
-        except (SystemException, Exception) as ex:
-            handle_system_exception(ex)
-            initialize(restart=True)
+            except (SystemException, Exception) as ex:
+                handle_system_exception(ex)
+
 
 
     except InterruptException:

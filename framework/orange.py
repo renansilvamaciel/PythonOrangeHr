@@ -1,6 +1,4 @@
-from logging import raiseExceptions
-
-from framework.exceptions import SystemException
+from framework.exceptions import SystemException, BusinessException
 from botcity.web.browsers.chrome import default_options
 from botcity.web import WebBot, By
 import framework.config as config
@@ -43,7 +41,7 @@ def login(bot: WebBot) -> None:
                          by=By.XPATH, ensure_visible=True, ensure_clickable=True).click()
 
         # Find any hook to confirm login
-        if bot.find_element(selector='//span[text()="Recruitment"]', by=By.XPATH, ensure_visible=True):
+        if not bot.find_element(selector='//span[text()="Recruitment"]', by=By.XPATH, ensure_visible=True):
             raise SystemException('Failed to login to OrangeHRM')
 
     except Exception as error:
@@ -69,7 +67,9 @@ def access_add_candidate(bot: WebBot) -> None:
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
+        logger.error(
+            f"Type Erro:{error} | Line:{exc_traceback.tb_lineno} | Task:{exc_traceback.tb_frame.f_code.co_name}")
+        raise ValueError(error)
 
 
 def download_csv(bot: WebBot, link_download: str) -> str:
@@ -108,10 +108,10 @@ def read_csv(file_path: str) -> pd.DataFrame:
         return df_employes
 
     except Exception as error:
-
         exc_type, exc_value, exc_traceback = sys.exc_info()
-
-        raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
+        logger.error(
+            f"Type Erro:{error} | Line:{exc_traceback.tb_lineno} | Task:{exc_traceback.tb_frame.f_code.co_name}")
+        raise ValueError(error)
 
 
 def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, contact_number: str, keywords: str) -> None:
@@ -130,6 +130,9 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
         with open(f'{config.resources_folder}/resume.txt', 'w') as arquivo:
             arquivo.write(f"{full_name}\n{vacancy}\n{email}\n{contact_number}\n{keywords}")
 
+        # Um exemplo de exceção de negócio
+        if full_name == 'Carlos Eduardo Lima':
+            raise BusinessException('Exemplo de exceção de negócio')
         name = full_name.split(' ')
 
         # Set first Name
@@ -160,5 +163,6 @@ def register_candidate(bot: WebBot, full_name: str, vacancy: str, email: str, co
 
     except Exception as error:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        raise ValueError(error, exc_traceback.tb_lineno, exc_traceback.tb_frame.f_code.co_name)
-
+        logger.error(
+            f"Type Erro:{error} | Line:{exc_traceback.tb_lineno} | Task:{exc_traceback.tb_frame.f_code.co_name}")
+        raise error
