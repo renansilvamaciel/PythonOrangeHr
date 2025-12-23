@@ -13,7 +13,7 @@ def handle_business_exception(exception: Exception):
     STATE.register_error()
     maestro.alert(task_id=STATE.task_id,
                   title="Business Exception ocurred.",
-                  message=f"Item: {STATE.item}.", alert_type=AlertType.ERROR)
+                  message=f"Item: {exception}.", alert_type=AlertType.ERROR)
 
     screenshot_error_report(exception)
 
